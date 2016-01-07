@@ -106,8 +106,9 @@ This script makes generating and sharing certificates much simpler.
     # remove the certificate from a client or server:
     PS C:\ >.\mycert.ps1 -remove 
     
-    <# You can also have it bind the SSL Certificate when installing 
-    #>
+    ## You can also have it bind the SSL Certificate when installing 
+    ## -------------------------------------------------------------
+    
     # install it on a server and bind the cert for SSL:
     PS C:\ >.\mycert.ps1 -install -password "MYPASSWORD" -sslport 443
     
