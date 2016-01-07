@@ -1,4 +1,4 @@
-# CertScriptTool
+# New-CertificateScript.ps1
 Creates PowerShell scripts that can trivially install/remove/bind SSL (self-signed or otherwise) certificates
 
 
@@ -31,6 +31,36 @@ This script makes generating and sharing certificates much simpler.
          SecureString. This made it kinda difficult to actually use.
    
 
+### Syntax
+``` powershell
+    C:\root\work\CertScriptTool\New-CertificateScript.ps1 -SelfSigned -DnsNames <String[]> [-IpAddresses <String[]>] [-Password <Object>] [-OutputScript <Object>] [<CommonParameters>]
+
+    C:\root\work\CertScriptTool\New-CertificateScript.ps1 -certificate <Object> [-PfxPassword <Object>] [-Password <Object>] [-OutputScript <Object>] [<CommonParameters>]
+    
+    
+    -SelfSigned [<SwitchParameter>] 
+        # generates a self-signed certificate for testing
+
+    -DnsNames <String[]>    
+        # a list of DNS (machine) names to use for the certificate
+
+    -IpAddresses <String[]> 
+        # any additional IP addresses to bind the certificate for 
+
+    -certificate <Object>   
+        # use an existing cert instead of generating on. Can be a certificate 
+        # file, a certificate path, or an X509Certificate2 object
+
+    -PfxPassword <Object>
+        # if passing in a path to a .pfx file, the password for that file
+
+    -Password <Object>
+        # the password to protect the private key in the generated script
+
+    -OutputScript <Object>
+        # the output script name. Defaults to .\$THUMBPRINT-Certificate.ps1
+    
+```
 ### EXAMPLE: create a self-signed certificate 
 ``` powershell
     
