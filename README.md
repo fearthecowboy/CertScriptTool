@@ -1,6 +1,9 @@
 # New-CertificateScript.ps1
 Creates PowerShell scripts that can trivially install/remove/bind SSL (self-signed or otherwise) certificates
 
+## Another way to look at it.
+It creates an installer script (and embeds the certificate inside) for a certificate. Neat and tidy.
+
 # Why would you do this?
 
 Well, while the `New-SelfSignedCertificate` cmdlet allows you to add DNS Names 
