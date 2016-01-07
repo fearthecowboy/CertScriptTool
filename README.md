@@ -61,6 +61,7 @@ This script makes generating and sharing certificates much simpler.
     
     # remove the certificate from a client or server:
     PS C:\ >.\mycert.ps1 -remove 
+```
 
 ## EXAMPLE
 ``` powershell
