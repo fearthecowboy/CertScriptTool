@@ -74,6 +74,7 @@ This script makes generating and sharing certificates much simpler.
         # the output script name. Defaults to .\$THUMBPRINT-Certificate.ps1
     
 ```
+
 ### EXAMPLE: create a self-signed certificate 
 ``` powershell
     
@@ -104,7 +105,17 @@ This script makes generating and sharing certificates much simpler.
     
     # remove the certificate from a client or server:
     PS C:\ >.\mycert.ps1 -remove 
+    
+    # install it on a server and bind the cert for SSL:
+    PS C:\ >.\mycert.ps1 -install -password "MYPASSWORD" -sslport 443
+    
+    # remove the certificate from a server and unbind the SSL:
+    PS C:\ >.\mycert.ps1 -remove -sslport 443
+    
 ```
+
+### EXAMPLE: create a self-signed certificate, install
+
 
 ### EXAMPLE: create certificate script from a .pfx file
 ``` powershell
