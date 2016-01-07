@@ -23,6 +23,7 @@ This script makes generating and sharing certificates much simpler.
    ===================
    
    I purposefully allowed plaintext passwords for two reasons.
+
       1. I hate having to play with SecureStrings when doing development. 
          It just makes things a pain. I'll mind my P's and Q's thank you very much.
          
