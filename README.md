@@ -33,9 +33,22 @@ This script makes generating and sharing certificates much simpler.
 
 ### Syntax
 ``` powershell
-    C:\root\work\CertScriptTool\New-CertificateScript.ps1 -SelfSigned -DnsNames <String[]> [-IpAddresses <String[]>] [-Password <Object>] [-OutputScript <Object>] [<CommonParameters>]
+    # generate a script for a self-signed certificate
+    C:\root\work\CertScriptTool\New-CertificateScript.ps1 
+        -SelfSigned 
+        -DnsNames <String[]> 
+        [-IpAddresses <String[]>] 
+        [-Password <Object>] 
+        [-OutputScript <Object>] 
+        [<CommonParameters>]
 
-    C:\root\work\CertScriptTool\New-CertificateScript.ps1 -certificate <Object> [-PfxPassword <Object>] [-Password <Object>] [-OutputScript <Object>] [<CommonParameters>]
+    # generate a script for an existing certificate
+    C:\root\work\CertScriptTool\New-CertificateScript.ps1 
+        -certificate <Object> 
+        [-PfxPassword <Object>] 
+        [-Password <Object>] 
+        [-OutputScript <Object>] 
+        [<CommonParameters>]
     
     
     -SelfSigned [<SwitchParameter>] 
