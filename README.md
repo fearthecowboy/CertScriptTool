@@ -1,6 +1,21 @@
 # New-CertificateScript.ps1
 Creates PowerShell scripts that can trivially install/remove/bind SSL (self-signed or otherwise) certificates
 
+# Why would you do this?
+
+Well, while the `New-SelfSignedCertificate` cmdlet allows you to add DNS Names 
+which show up in the SubjectAlternativeName field, it doesn't allow you to add
+IP addresses so you can't make a SSL certificate for https://127.0.0.1 for 
+example
+
+Plus, when you give someone a .pfx or .cer file, you have to tell them *how* to
+install it, and *where* to install it, and that's not fun.
+
+As well, the `netsh` tool is a demented and evil tool that punishes you without 
+telling you why, so I wanted to make it easy to bind a cert to an SSL channel.
+
+Hence, this script was born.
+
 
 # Description
 
