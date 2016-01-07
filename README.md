@@ -31,9 +31,9 @@ This script makes generating and sharing certificates much simpler.
          SecureString. This made it kinda difficult to actually use.
    
 
-## EXAMPLE
+### EXAMPLE: create a self-signed certificate 
 ``` powershell
-    # create a self-signed certificate 
+    
     PS C:\ > New-CertificateScript.ps1 -SelfSigned -DnsNames contoso.com, www.contoso.com -Password "MYPASSWORD" -OutputScript .\mycert.ps1 
     
     Generated certificate: AC23D228856B5CDE28618467C652F216EABB6D1D
@@ -63,9 +63,9 @@ This script makes generating and sharing certificates much simpler.
     PS C:\ >.\mycert.ps1 -remove 
 ```
 
-## EXAMPLE
+### EXAMPLE: create certificate script from a .pfx file
 ``` powershell
-    # create certificate script from a .pfx file
+    
     PS C:\ > New-CertificateScript.ps1 -Cert .\mycert.pfx -PfxPassword "pwd4pfx" -Password "MYPASSWORD" -OutputScript .\mycert.ps1 
 
     Created Certificate Script : C:\myscript.ps1
