@@ -100,7 +100,7 @@ param(
     [Parameter(ParameterSetName="selfsigned",Mandatory=$true)][Switch]$SelfSigned,
     [Parameter(ParameterSetName="selfsigned",Mandatory=$true)][String[]] $DnsNames, 
     [Parameter(ParameterSetName="selfsigned")][String[]] $IpAddresses,
-
+    [Parameter(ParameterSetName="selfsigned")][String] $SignatureAlgorithm = "SHA1",
     [Parameter(ParameterSetName="usecertfile",Mandatory=$true)]$certificate,
     [Parameter(ParameterSetName="usecertfile")]$PfxPassword,
     
@@ -377,7 +377,7 @@ function Generate-Script([System.Security.Cryptography.X509Certificates.X509Cert
     write-host "Created Certificate Script : $(resolve-path $OutputScript)"
 }
 
-function Generate-SelfSignedCertificate([Parameter(Mandatory=$true)][String[]] $DnsNames, $Password ,[String[]] $IpAddresses )  {
+function Generate-SelfSignedCertificate([Parameter(Mandatory=$true)][String[]] $DnsNames, $Password ,[String[]] $IpAddresses, [String] $SignatureAlgorithm )  {
     # ensure LocalHost is added
     # and any that are specified by the user
     $IpAddresses = @("127.0.0.1", "::1") + $IpAddresses
@@ -407,7 +407,7 @@ function Generate-SelfSignedCertificate([Parameter(Mandatory=$true)][String[]] $
     $cert = $gen.GenerateSelfSignedCertificate(
             $key,
             ( new-object -type  System.Security.Cryptography.X509Certificates.X500DistinguishedName "CN=$($dnsNames[0]), O=FOR ENCRYPTION ONLY-NO TRUST IMPLIED, OU=Created by script" ),
-            [VCSJones.FiddlerCertGen.HashAlgorithm]::SHA1,
+            [VCSJones.FiddlerCertGen.HashAlgorithm] $SignatureAlgorithm,
             $DnsNames, 
             $Addresses);
     # drop the key
@@ -444,7 +444,7 @@ Load-Assembly($CertGen)
 if( $SelfSigned ) {
     # we're creating a self-signed certificate 
     if( $Password ) {
-        Generate-SelfSignedCertificate $DnsNames $Password $IpAddresses 
+        Generate-SelfSignedCertificate $DnsNames $Password $IpAddresses $SignatureAlgorithm
     } else {
         write-error "You must specify a password when generating a self-signed password"
     }
