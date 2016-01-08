@@ -77,6 +77,10 @@ This script makes generating and sharing certificates much simpler.
 
     -IpAddresses <String[]> 
         # any additional IP addresses to bind the certificate for 
+		
+    -SignatureAlgorithm <String>
+        # Optional. The signature algorithm of the certificate. Default value
+        # is SHA1.
 
     -certificate <Object>   
         # use an existing cert instead of generating on. Can be a certificate 
