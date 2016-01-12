@@ -100,7 +100,7 @@ param(
     [Parameter(ParameterSetName="selfsigned",Mandatory=$true)][Switch]$SelfSigned,
     [Parameter(ParameterSetName="selfsigned",Mandatory=$true)][String[]] $DnsNames, 
     [Parameter(ParameterSetName="selfsigned")][String[]] $IpAddresses,
-    [Parameter(ParameterSetName="selfsigned")][String] $SignatureAlgorithm = "SHA1",
+    [Parameter(ParameterSetName="selfsigned")][String] $SignatureAlgorithm = "SHA384",
     [Parameter(ParameterSetName="usecertfile",Mandatory=$true)]$certificate,
     [Parameter(ParameterSetName="usecertfile")]$PfxPassword,
     
@@ -160,35 +160,40 @@ function Get-CNs($c) {
     return $CNs
 }
 
-
 # init_pfx
 # init_cert  
 
 function Install-Certificate( $PasswordForPrivateKey, $SSLPort ) {
 
+    Get-EventSubscriber | Unregister-Event
+    
+    @("$ENV:APPDATA\Microsoft\Crypto\keys", "$ENV:ALLUSERSPROFILE\Microsoft\Crypto\keys" ) |% { 
+        $fsw = New-Object IO.FileSystemWatcher $_ -Property @{IncludeSubdirectories = $false;NotifyFilter = [IO.NotifyFilters]'FileName, LastWrite, DirectoryName';EnableRaisingEvents = $true }
+        $null = Register-ObjectEvent $fsw Created -Action { 
+            # write-host "KEY FILE: $($Event.SourceEventArgs.FullPath)"
+            $acl = get-acl $Event.SourceEventArgs.FullPath 
+            $acl.AddAccessRule( (new-object System.Security.AccessControl.FileSystemAccessRule "users","Read","Allow") )
+            $null = set-acl $Event.SourceEventArgs.FullPath -aclobject $acl 
+        }        
+    }
+
     # put in root so this system recognizes the certificate 
-    # $c = [System.Security.Cryptography.X509Certificates.X509Certificate2] $cert
-    # Import-CertificateFile $c "root" -localmachine  
-    $name = "$env:temp\$((New-Guid).Guid).cer"        
-    Set-Content -Path $name -Value $cert -Encoding Byte
-    $c = Import-Certificate -FilePath $name -CertStoreLocation cert:\localmachine\root 
-    erase -ea 0 $name 
+    $c = [System.Security.Cryptography.X509Certificates.X509Certificate2] $cert
+    Import-CertificateFile $c "root" -localmachine  
     
     if( $pfx -and $PasswordForPrivateKey ) {
         # private key installation supoprted
-        # $exportable =[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable
-        # $c = new-object -type System.Security.Cryptography.X509Certificates.X509Certificate2] -argumentlist $pfx,$PasswordForPrivateKey, $exportable 
-        # Import-CertificateFile $c "my" -localmachine
-        
-        $name = "$env:temp\$((New-Guid).Guid).pfx"        
-        Set-Content -Path $name -Value $pfx -Encoding Byte
-        $c = Import-PfxCertificate -FilePath $name -CertStoreLocation cert:\localmachine\my -password (convertto-securestring -string $PasswordForPrivateKey -force -asplaintext) -exportable
-        erase -ea 0 $name 
+        $sf = [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable + [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::MachineKeySet + [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::PersisteKeySet
+        $c = new-object -type System.Security.Cryptography.X509Certificates.X509Certificate2] -argumentlist $pfx, $PasswordForPrivateKey, $sf
+        Import-CertificateFile $c "my" -localmachine
         
         $appid = "{$((New-Guid).Guid)}"
         
         # Register certs for SSL too..
         if( $SSLPort ) {
+            # enable firewall for that port.
+            netsh advfirewall firewall add rule name="SSL on port $SSLPort" protocol=TCP dir=in localport=$SSLPort action=allow
+        
             $certhash = "certhash=$($c.Thumbprint)"
             Get-SANs $c |% { 
                 $type,$value = "$_".split("=")
@@ -226,7 +231,7 @@ function Install-Certificate( $PasswordForPrivateKey, $SSLPort ) {
             }
         }
     } 
-
+    Get-EventSubscriber | Unregister-Event
 }
 
 function remove-cert( $path ) {
@@ -279,8 +284,6 @@ function go($Install,$PasswordForPrivateKey, $Remove,$ShowInfo, $SSLPort ) {
     if( $Remove ) {
         $c = [System.Security.Cryptography.X509Certificates.X509Certificate2] $cert
         
-      
-        
         if( $SSLPort ) {
             $certhash = "certhash=$($c.Thumbprint)"
             Get-SANs $c |% { 
@@ -317,7 +320,6 @@ function go($Install,$PasswordForPrivateKey, $Remove,$ShowInfo, $SSLPort ) {
         remove-cert "cert:\localmachine\root\$($c.Thumbprint)" 
         remove-cert "cert:\currentuser\my\$($c.Thumbprint)" 
         remove-cert "cert:\currentuser\root\$($c.Thumbprint)" 
-        
     }
 }
 #>>
